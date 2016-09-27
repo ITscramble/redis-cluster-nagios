@@ -1,0 +1,3 @@
+# Redis cluster nagios
+	- This check is able to verify the status of redis cluster
+

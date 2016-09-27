@@ -1,0 +1,35 @@
+#!/usr/bin/python
+import subprocess
+import sys
+import os
+
+
+# CLUSTER INFO OUTPUT
+#	cluster_state:ok
+#	cluster_slots_assigned:16384
+#	cluster_slots_ok:16384
+#	cluster_slots_pfail:0
+#	cluster_slots_fail:0
+#	cluster_known_nodes:8
+#	cluster_size:4
+#	cluster_current_epoch:4
+#	cluster_my_epoch:1
+#	cluster_stats_messages_sent:417388
+#	cluster_stats_messages_received:417388
+
+command = "redis-cli cluster info"
+p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, stderr=subprocess.STDOUT )
+output = p.communicate()
+if output[0].find("refused") > 1 :
+	sys.exit("CRITICAL: Unable to connect to redis")
+else:
+	output_arr = output[0].strip('\n\t\r').split("\r\n")
+
+
+cluster_state = output_arr[0].split(":")
+cluster_slots_fail = output_arr[4].split(":")
+
+if cluster_state[1] == "ok":
+	print "OK. Cluster redis is up. "
+else:
+	print "CRITICAL: Cluster redis is down. Cluster slots fail %s" % cluster_slots_fail[1]
