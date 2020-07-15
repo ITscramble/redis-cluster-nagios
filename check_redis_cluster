@@ -2,7 +2,7 @@
 import subprocess
 import sys
 import os
-
+import argparse
 
 # CLUSTER INFO OUTPUT
 #	cluster_state:ok
@@ -17,7 +17,12 @@ import os
 #	cluster_stats_messages_sent:417388
 #	cluster_stats_messages_received:417388
 
-command = "redis-cli cluster info"
+parser = argparse.ArgumentParser()
+parser.add_argument('-H', dest='hostname', help='hostname', required=True)
+parser.add_argument('-p', dest='port', help='port', default='6379')
+args = parser.parse_args()
+
+command = "redis-cli -h " + args.hostname + " -p " + args.port + " cluster info"
 p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, stderr=subprocess.STDOUT )
 output = p.communicate()
 if output[0].find("refused") > 1 :
